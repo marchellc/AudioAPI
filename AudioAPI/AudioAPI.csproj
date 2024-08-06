@@ -100,7 +100,7 @@
   <ItemGroup>
     <Compile Include="AudioPlayer.cs" />
     <Compile Include="AudioSource.cs" />
-    <Compile Include="Commands\Play\PlayAtCommand.cs" />
+    <Compile Include="Commands\Play\PlayAtUrlCommand.cs" />
     <Compile Include="Commands\Play\PlayFileCommand.cs" />
     <Compile Include="Commands\Play\PlayUrlCommand.cs" />
     <Compile Include="Commands\PlayCommand.cs" />

@@ -41,7 +41,7 @@ namespace AudioAPI.Commands.File
 
                 var player = new AudioPlayer();
 
-                player.Receivers.Clear();
+                player.Initialize(true);
                 player.AddAllReceivers();
 
                 player.Channel = channel;

@@ -16,7 +16,7 @@ namespace AudioAPI.Commands
         {
             RegisterCommand(new PlayFileCommand());
             RegisterCommand(new PlayUrlCommand());
-            RegisterCommand(new PlayAtCommand());
+            RegisterCommand(new PlayAtUrlCommand());
         }
     }
 }

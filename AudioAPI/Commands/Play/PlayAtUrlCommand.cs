@@ -1,4 +1,5 @@
-﻿using LabExtended.API;
+﻿using AudioAPI.Extensions;
+using LabExtended.API;
 
 using LabExtended.Commands;
 using LabExtended.Commands.Arguments;
@@ -14,11 +15,11 @@ using VoiceChat;
 
 namespace AudioAPI.Commands.File
 {
-    public class PlayAtCommand : CustomCommand
+    public class PlayAtUrlCommand : CustomCommand
     {
         public static AudioSource TestSource;
 
-        public override string Command => "at";
+        public override string Command => "aturl";
         public override string Description => "Plays audio from a URL at a specified player.";
 
         public override ArgumentDefinition[] BuildArgs()
@@ -26,7 +27,6 @@ namespace AudioAPI.Commands.File
             return GetArgs(x =>
             {
                 x.WithArg<string>("Url", "Url to the audio file.");
-                x.WithArg<ExPlayer>("Target", "The targeted player.");
                 x.WithOptional<VoiceChatChannel>("Channel", "The channel to send the audio via", VoiceChatChannel.Proximity);
             });
         }
@@ -36,7 +36,6 @@ namespace AudioAPI.Commands.File
             base.OnCommand(sender, ctx, args);
 
             var url = args.Get<string>("Url");
-            var target = args.Get<ExPlayer>("Target");
             var channel = args.Get<VoiceChatChannel>("Channel");
 
             ctx.RespondOk("Downloading file ..");
@@ -52,7 +51,17 @@ namespace AudioAPI.Commands.File
                 while (!TestSource.IsSpawned)
                     yield return Timing.WaitForOneFrame;
 
-                TestSource.Play(target.Position, data);
+                TestSource.ProximityReceivers.Clear();
+
+                if (channel is VoiceChatChannel.Proximity)
+                    TestSource.ProximityReceivers.Add(sender);
+
+                TestSource.Channel = channel;
+
+                TestSource.Player.Receivers.Clear();
+                TestSource.Player.AddAllReceivers();
+
+                TestSource.Play(sender.Position, data);
             }
 
             AsyncMethods.GetByteArrayAsync(url).Await(data =>

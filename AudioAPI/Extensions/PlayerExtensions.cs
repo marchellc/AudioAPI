@@ -2,7 +2,6 @@
 
 using System;
 using System.IO;
-using System.Linq;
 
 namespace AudioAPI.Extensions
 {
@@ -49,7 +48,7 @@ namespace AudioAPI.Extensions
             if (receiver is null)
                 throw new ArgumentNullException(nameof(receiver));
 
-            if (player.Receivers.Any(x => x.PlayerId == receiver.PlayerId))
+            if (player.Receivers.Contains(receiver))
                 return false;
 
             return player.Receivers.Add(receiver);
@@ -84,7 +83,7 @@ namespace AudioAPI.Extensions
 
             foreach (var ply in ExPlayer.Players)
             {
-                if (player.Receivers.Any(x => x.PlayerId == ply.PlayerId))
+                if (player.Receivers.Contains(ply))
                     continue;
 
                 player.AddReceiver(ply);

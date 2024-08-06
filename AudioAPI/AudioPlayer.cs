@@ -1,10 +1,8 @@
 ﻿using LabExtended.API;
-using LabExtended.API.Collections.Locked;
+using LabExtended.API.Collections;
 
 using LabExtended.Core;
 using LabExtended.Core.Ticking;
-
-using LabExtended.Extensions;
 
 using MEC;
 
@@ -72,7 +70,8 @@ namespace AudioAPI
         public Stream Current { get; private set; } = null;
 
         public ConcurrentQueue<Stream> Queue { get; } = new ConcurrentQueue<Stream>();
-        public LockedHashSet<ExPlayer> Receivers { get; } = new LockedHashSet<ExPlayer>();
+
+        public PlayerCollection Receivers { get; } = new PlayerCollection();
 
         public VoiceChatChannel Channel { get; set; } = VoiceChatChannel.Proximity;
 
@@ -80,6 +79,7 @@ namespace AudioAPI
         public event Action OnStarted;
         public event Action OnInitialized;
         public event Action OnDisposed;
+        public event Action OnUpdate;
 
         public virtual void Initialize(bool selfUpdate = false)
         {
@@ -227,16 +227,17 @@ namespace AudioAPI
 
                 Volume = 100f;
 
-                Receivers.Clear();
-
                 Clear();
 
+                Receivers.Dispose();
+
                 OnDisposed?.Invoke();
+                OnDisposed = null;
 
                 OnStarted = null;
                 OnFinished = null;
-                OnDisposed = null;
                 OnInitialized = null;
+                OnUpdate = null;
             }
             catch (Exception ex)
             {
@@ -250,6 +251,8 @@ namespace AudioAPI
             {
                 if (!m_SendReady || m_StreamBuffer is null || m_EncodedBuffer is null || m_StreamBuffer.Count < 1 || !IsSourceReady)
                     return;
+
+                OnUpdate?.Invoke();
 
                 m_AllowedSamples += Time.deltaTime * m_SamplesPerSec;
 
